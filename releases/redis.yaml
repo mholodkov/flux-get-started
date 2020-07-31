@@ -6,10 +6,6 @@ metadata:
   namespace: demo
   annotations:
     fluxcd.io/automated: "true"
-    fluxcd.io/tag.chart-image: semver:~5.0
-    fluxcd.io/locked: "true"
-    fluxcd.io/locked_msg: "Halt updates for now"
-    fluxcd.io/locked_user: "Stefan Prodan <stefan@weave.works>"
 spec:
   releaseName: redis
   chart:
@@ -23,7 +19,7 @@ spec:
     usePassword: true
     image:
       repository: bitnami/redis
-      tag: 6.0.5
+      tag: 6.0.0
     service:
       type: ClusterIP
       port: 6379
