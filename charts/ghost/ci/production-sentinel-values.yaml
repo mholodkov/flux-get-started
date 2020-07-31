@@ -18,7 +18,7 @@ image:
   ## Bitnami Redis image tag
   ## ref: https://github.com/bitnami/bitnami-docker-redis#supported-tags-and-respective-dockerfile-links
   ##
-  tag: 6.0.5-debian-10-r32
+  tag: 5.0.9-debian-10-r0
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -42,12 +42,12 @@ image:
 ## Cluster settings
 cluster:
   enabled: true
-  slaveCount: 2
+  slaveCount: 3
 
 ## Use redis sentinel in the redis pod. This will disable the master and slave services and
 ## create one redis service with ports to the sentinel and the redis instances
 sentinel:
-  enabled: false
+  enabled: true
   ## Require password authentication on the sentinel itself
   ## ref: https://redis.io/topics/sentinel
   usePassword: true
@@ -60,7 +60,7 @@ sentinel:
     ## Bitnami Redis image tag
     ## ref: https://github.com/bitnami/bitnami-docker-redis-sentinel#supported-tags-and-respective-dockerfile-links
     ##
-    tag: 6.0.5-debian-10-r28
+    tag: 5.0.9-debian-10-r0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -141,7 +141,7 @@ clusterDomain: cluster.local
 networkPolicy:
   ## Specifies whether a NetworkPolicy should be created
   ##
-  enabled: false
+  enabled: true
 
   ## The Policy model to apply. When set to false, only pods with the correct
   ## client label will have network access to the port Redis is listening
@@ -200,7 +200,7 @@ usePassword: true
 ## Defaults to a random 10-character alphanumeric string if not set and usePassword is true
 ## ref: https://github.com/bitnami/bitnami-docker-redis#setting-the-server-password-on-first-run
 ##
-password: ""
+password:
 ## Use existing secret (ignores previous password)
 # existingSecret:
 ## Password key to be retrieved from Redis secret
@@ -221,31 +221,6 @@ persistence:
 redisPort: 6379
 
 ##
-## TLS configuration
-##
-tls:
-  # Enable TLS traffic
-  enabled: false
-  #
-  # Whether to require clients to authenticate or not.
-  authClients: true
-  #
-  # Name of the Secret that contains the certificates
-  certificatesSecret:
-  #
-  # Certificate filename
-  certFilename:
-  #
-  # Certificate Key filename
-  certKeyFilename:
-  #
-  # CA Certificate filename
-  certCAFilename:
-  #
-  # File containing DH params (in order to support DH based ciphers)
-  # dhParamsFilename:
-
-##
 ## Redis Master parameters
 ##
 master:
@@ -261,6 +236,7 @@ master:
   ## Redis additional command line flags
   ##
   ## Can be used to specify command line flags, for example:
+  ##
   ## extraFlags:
   ##  - "--maxmemory-policy volatile-ttl"
   ##  - "--repl-backlog-size 1024mb"
@@ -446,14 +422,6 @@ slave:
   ##
   affinity: {}
 
-  ## Kubernetes Spread Constraints for pod assignment
-  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
-  ##
-  # - maxSkew: 1
-  #   topologyKey: node
-  #   whenUnsatisfiable: DoNotSchedule
-  spreadConstraints: {}
-
   ## Configure extra options for Redis Slave liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)
   ##
@@ -554,12 +522,12 @@ slave:
 ## Prometheus Exporter / Metrics
 ##
 metrics:
-  enabled: false
+  enabled: true
 
   image:
     registry: docker.io
     repository: bitnami/redis-exporter
-    tag: 1.9.0-debian-10-r2
+    tag: 1.5.3-debian-10-r14
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.
@@ -606,7 +574,7 @@ metrics:
     namespace: ""
     ## Redis prometheus rules
     ## These are just examples rules, please adapt them to your needs.
-    ## Make sure to constraint the rules to the current redis service.
+    ## Make sure to constraint the rules to the current postgresql service.
     # rules:
     #   - alert: RedisDown
     #     expr: redis_up{service="{{ template "redis.fullname" . }}-metrics"} == 0
@@ -712,11 +680,3 @@ podSecurityPolicy:
   ## Specifies whether a PodSecurityPolicy should be created
   ##
   create: false
-
-## Define a disruption budget
-## ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
-##
-podDisruptionBudget:
-  enabled: false
-  minAvailable: 1
-  # maxUnavailable: 1
